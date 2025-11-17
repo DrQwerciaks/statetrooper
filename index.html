@@ -32,6 +32,7 @@
       <video id="camera" autoplay playsinline width="320" height="240"></video>
       <button onclick="startCamera()">Włącz kamerę</button>
       <button onclick="stopCamera()">Wyłącz kamerę</button>
+      <button onclick="playRomaMeme()" class="roma-button">ROMA</button>
     </div>
 
     <audio id="soundOn" src="./bdy.mp3" preload="auto"></audio>
@@ -42,6 +43,14 @@
         <source src="./body.mp4" type="video/mp4" />
         Twoja przeglądarka nie obsługuje elementu video.
     </video>
+
+    <div id="romaContainer" class="roma-container hidden">
+        <button class="roma-close" onclick="closeRomaMeme()">×</button>
+        <video id="romaMeme" class="roma-meme" autoplay playsinline>
+            <source src="./roma.mp4" type="video/mp4" />
+            Twoja przeglądarka nie obsługuje elementu video.
+        </video>
+    </div>
 
     <script src="./script.js"></script>
   </body>

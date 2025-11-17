@@ -30,6 +30,8 @@ function calculateBMI() {
 }
 
  let stream;
+    let mediaRecorder;
+    let recordedChunks = [];
     const video = document.getElementById("camera");
     const soundOn = document.getElementById("soundOn");
     const soundOff = document.getElementById("soundOff");
@@ -46,7 +48,6 @@ function calculateBMI() {
         setTimeout(() => {
           officerElement.classList.remove('hidden');
           officerElement.classList.add('officer-appear', 'officer-shake');
-          // Wymusza odtworzenie video
           officerElement.play().catch(e => console.log('Autoplay zablokowany:', e));
         }, duration);
         
@@ -55,7 +56,6 @@ function calculateBMI() {
           statusElement.classList.remove('shake');
           officerElement.classList.add('hidden');
           officerElement.classList.remove('officer-appear', 'officer-shake');
-          // Pauzuje video gdy jest ukryte
           officerElement.pause();
         }, duration + 3000);
       } else {
@@ -66,12 +66,51 @@ function calculateBMI() {
       }
     }
 
+    function startRecording() {
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      
+      mediaRecorder.ondataavailable = function(event) {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = function() {
+        downloadRecording();
+      };
+      
+      mediaRecorder.start();
+    }
+    
+    function downloadRecording() {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const now = new Date();
+      const timestamp = now.getFullYear() + '-' + 
+                       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(now.getDate()).padStart(2, '0') + '_' + 
+                       String(now.getHours()).padStart(2, '0') + '-' + 
+                       String(now.getMinutes()).padStart(2, '0') + '-' + 
+                       String(now.getSeconds()).padStart(2, '0');
+      
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `bodycam_nagranie_${timestamp}.webm`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     async function startCamera() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         video.srcObject = stream;
         soundOn.play();
         showCameraStatus('BODY CAM ON');
+        startRecording();
       } catch (err) {
         console.error("Błąd dostępu do kamerki:", err);
       }
@@ -79,9 +118,43 @@ function calculateBMI() {
 
     function stopCamera() {
       if (stream) {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+        
         stream.getTracks().forEach(track => track.stop());
         video.srcObject = null;
         soundOff.play();
-        showCameraStatus('BODY CAM OFF?', 2000, true);
+        showCameraStatus('BODY CAM WHO?', 2000, true);
       }
     }
+
+    function playRomaMeme() {
+      const romaContainer = document.getElementById('romaContainer');
+      const romaMeme = document.getElementById('romaMeme');
+      
+      romaContainer.classList.remove('hidden');
+      romaMeme.currentTime = 0;
+      romaMeme.play().catch(e => console.log('Autoplay zablokowany:', e));
+      
+      romaMeme.onended = function() {
+        closeRomaMeme();
+      };
+    }
+    
+    function closeRomaMeme() {
+      const romaContainer = document.getElementById('romaContainer');
+      const romaMeme = document.getElementById('romaMeme');
+      
+      romaMeme.pause();
+      romaContainer.classList.add('hidden');
+    }
+    
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const romaContainer = document.getElementById('romaContainer');
+        if (!romaContainer.classList.contains('hidden')) {
+          closeRomaMeme();
+        }
+      }
+    });

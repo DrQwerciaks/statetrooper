@@ -226,3 +226,52 @@ button:disabled {
   90% { transform: translate(-50%, -50%) translate(3px, 3px) rotate(0deg) scale(0.96); }
   100% { transform: translate(-50%, -50%) translate(2px, -3px) rotate(-2deg) scale(1); }
 }
+
+.roma-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.roma-container.hidden {
+  display: none;
+}
+
+.roma-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roma-close:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.roma-meme {
+  width: 300px;
+  height: 533px;
+  max-width: 90vw;
+  max-height: 80vh;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  object-fit: cover;
+}
